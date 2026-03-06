@@ -1,5 +1,8 @@
-#include "SDL.h"
-#include <iostream>
+#include "VisualCalculator.h"
+
+
+
+
 
 int main(int argc, char* argv[])
 {
@@ -15,30 +18,26 @@ int main(int argc, char* argv[])
         printf("Couldn't initialize SDL: %s\n", SDL_GetError());
         exit(1);
     }
-
-    SDL_Window*  window = SDL_CreateWindow("Hoe", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, windowFlags);
-
-    if (!window)
-    {
-        printf("Failed to open %d x %d window: %s\n", SCREEN_WIDTH, SCREEN_HEIGHT, SDL_GetError());
-        exit(1);
-    }
-
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, rendererFlags);
+    std::unique_ptr<WindowManager> WINDOW = initWidow("Okienko", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, windowFlags);
+    std::unique_ptr<ObjectManager> DATA = initObjectManager();
+    std::unique_ptr<RendererManager> DRAWER = initRenderer(WINDOW->window,-1,rendererFlags);
 
-    SDL_SetRenderDrawColor(renderer, 96, 128, 255, 255);
-    SDL_RenderClear(renderer);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderDrawLine(renderer, 10, 10, 250, 250);
-    SDL_RenderPresent(renderer);
+    VisualCalculator App(std::move(WINDOW), std::move(DATA), std::move(DRAWER));
+	App.LoadData("data.txt");
+	App.Play();
 
-	int a;
-	std::cin >> a;
+    
 
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
+    //SDL_SetRenderDrawColor(renderer, 96, 128, 255, 255);
+    //SDL_RenderClear(renderer);
+    //SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    //SDL_RenderDrawLine(renderer, 10, 10, 250, 250);
+    //SDL_RenderPresent(renderer);
+
+    
+
 
 	return 0;
 }

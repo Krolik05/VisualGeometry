@@ -127,6 +127,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ObjectManager.cpp" />
+    <ClCompile Include="RendererManager.cpp" />
+    <ClCompile Include="VisualCalculator.cpp" />
+    <ClCompile Include="WindowManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="General.h" />
+    <ClInclude Include="ObjectManager.h" />
+    <ClInclude Include="RendererManager.h" />
+    <ClInclude Include="VisualCalculator.h" />
+    <ClInclude Include="WindowManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
