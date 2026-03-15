@@ -21,6 +21,15 @@ void RendererManager::adjustPointToCamera(Point& p)
 
 }
 
+void RendererManager::adjustPointToCamera(FPoint& p)
+{
+	p.x *= scale;
+	p.y *= scale;
+	p.y *= -1;
+	p.x -= camera.x * scale;
+	p.y -= camera.y * scale;
+}
+
 void RendererManager::adjustPointFromCameraToCoordinates(Point& p)
 {
 	p.x += static_cast<int>(camera.x * scale);
@@ -32,6 +41,8 @@ void RendererManager::adjustPointFromCameraToCoordinates(Point& p)
 
 void RendererManager::adjustScaleToCavas(const std::vector<Point>& points)
 {
+	if(points.empty())
+		return;
 	int lowestX = points[0].x, highestX = points[0].x, lowestY = points[0].y, highestY = points[0].y;
 	for(Point p : points)
 	{
@@ -66,7 +77,11 @@ void RendererManager::drawCoordinateSystem()
 void RendererManager::drawPoints(const std::vector<Point>& points)
 {
 	for (Point p : points)
-		SDL_RenderDrawPoint(renderer, p.x, p.y);
+	{
+		Point temp = p;
+		adjustPointToCamera(temp);
+		SDL_RenderDrawPoint(renderer, temp.x, temp.y);
+	}
 }
 
 void RendererManager::writePointsData(const std::vector<Point>& points)
@@ -74,17 +89,8 @@ void RendererManager::writePointsData(const std::vector<Point>& points)
 	
 	std::string cameraT = "Scale: " + std::to_string(scale) +": (" + std::to_string(camera.x) + ", " + std::to_string(camera.y) + ")";
 
-
-	SDL_Surface* surfaceC = TTF_RenderText_Solid(font, cameraT.c_str(), { 0,0,0,255 });
-	SDL_Texture* textureC = SDL_CreateTextureFromSurface(renderer, surfaceC);
-
-	SDL_Rect rectC{ 0, 0, surfaceC->w, surfaceC->h };
-
-	SDL_RenderCopy(renderer, textureC, nullptr, &rectC);
-
-	SDL_DestroyTexture(textureC);
-	SDL_FreeSurface(surfaceC);
-
+	drawText(cameraT, 0, 0);
+	
 	if( scale < 1 )
 		return;
 	for (Point p : points)
@@ -92,17 +98,7 @@ void RendererManager::writePointsData(const std::vector<Point>& points)
 		Point temp = p;
 		adjustPointToCamera(temp);
 		std::string text = std::to_string(p.id) + ": (" + std::to_string(p.x) + ", " + std::to_string(p.y) + ")\n" + std::to_string(temp.id) + ": (" + std::to_string(temp.x) + ", " + std::to_string(temp.y) + ")";
-		
-		
-		SDL_Surface* surface = TTF_RenderText_Solid(font, text.c_str(), {0,0,0,255});
-		SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-
-		SDL_Rect rect{ temp.x, temp.y, surface->w, surface->h };
-
-		SDL_RenderCopy(renderer, texture, nullptr, &rect);
-
-		SDL_DestroyTexture(texture);
-		SDL_FreeSurface(surface);
+		drawText(text, temp.x, temp.y);
 	}
 }
 
@@ -119,9 +115,40 @@ void RendererManager::drawLines(const std::vector<indexLine>& lines, const std::
 	}
 }
 
+void RendererManager::drawExtendedLine(SegmentLine f, float from, float to)
+{
+	Point a{ 0, from, f(from) };
+	Point b{ 0, to, f(to) };
+	adjustPointToCamera(a);
+	adjustPointToCamera(b);
+	SDL_RenderDrawLine(renderer, a.x, a.y, b.x, b.y);
+}
+
+void RendererManager::drawFullLine(SegmentLine f)
+{
+	FPoint a{ 0, camera.x, f(camera.x) };
+	FPoint b{ 0, camera.x + camera.w / scale, f(camera.x + camera.w / scale) };
+	adjustPointToCamera(a);
+	adjustPointToCamera(b);
+	SDL_RenderDrawLine(renderer, a.x, a.y, b.x, b.y);
+}
+
 void RendererManager::setDrawColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
 {
 	SDL_SetRenderDrawColor(renderer, r, g, b, a);
+}
+
+void RendererManager::drawText(const std::string& text, int x, int y)
+{
+	SDL_Surface* surfaceC = TTF_RenderText_Solid(font, text.c_str(), {0,0,0,255});
+	SDL_Texture* textureC = SDL_CreateTextureFromSurface(renderer, surfaceC);
+
+	SDL_Rect rectC{ x, y, surfaceC->w, surfaceC->h };
+
+	SDL_RenderCopy(renderer, textureC, nullptr, &rectC);
+
+	SDL_DestroyTexture(textureC);
+	SDL_FreeSurface(surfaceC);
 }
 
 void RendererManager::clearCavas()

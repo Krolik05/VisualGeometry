@@ -11,7 +11,8 @@ public:
 
     void cameraCenterOnPoint(Point p);
 	void adjustPointToCamera(Point& p);
-	void adjustPointFromCameraToCoordinates(Point& p);
+    void adjustPointToCamera(FPoint& p);
+    void adjustPointFromCameraToCoordinates(Point& p);
 
     void adjustScaleToCavas(const std::vector<Point>& points);
 
@@ -19,7 +20,12 @@ public:
     void drawPoints(const std::vector<Point>& points);
 	void writePointsData(const std::vector<Point>& points);
     void drawLines(const std::vector<indexLine>& lines, const std::vector<Point>& points);
+
+	void drawExtendedLine(SegmentLine f, float from, float to);
+    void drawFullLine(SegmentLine f);
+
     void setDrawColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+	void drawText(const std::string& text, int x, int y);
     void clearCavas();
     void presentCanvas();
 

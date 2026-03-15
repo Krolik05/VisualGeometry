@@ -128,6 +128,7 @@
   <ItemGroup>
     <ClCompile Include="General.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Math.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="RendererManager.cpp" />
     <ClCompile Include="VisualCalculator.cpp" />
@@ -135,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="General.h" />
+    <ClInclude Include="Math.h" />
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="RendererManager.h" />
     <ClInclude Include="VisualCalculator.h" />

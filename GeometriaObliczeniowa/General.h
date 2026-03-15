@@ -1,7 +1,5 @@
 #pragma once
 
-
-
 // Jak to zrobiæ ¿eby by³o dobrze
 //  MenagerOkna 
 //      |- konstruktor, destruktor
@@ -25,42 +23,6 @@
 #include <memory>
 #include <utility>
 #include <string>
-struct FPoint
-{
-    int id;
-    float x, y;
-    void operator*= (float num);
-};
-
-FPoint operator+ (const FPoint& a, const FPoint& b);
-FPoint operator- (const FPoint& a, const FPoint& b);
-FPoint operator* (const FPoint& a, float num);
-std::ostream& operator<< (std::ostream& os, const FPoint& p);
-
-
-struct Point
-{
-    int id, x, y;
-    void operator*= (float num);
-};
-
-Point operator+ (const Point& a, const Point& b);
-Point operator- (const Point& a, const Point& b);
-Point operator* (const Point& a, float num);
-std::ostream& operator<< (std::ostream& os, const Point& p);
-
-struct Line
-{
-    Point beginning, end;
-};
-
-std::ostream& operator<< (std::ostream& os, const Line& l);
-
-struct indexLine
-{
-    int id, id_beginning, id_end;
-};
-
-std::ostream& operator<< (std::ostream& os, const indexLine& l);
+#include "Math.h"
 
 #endif // !General
