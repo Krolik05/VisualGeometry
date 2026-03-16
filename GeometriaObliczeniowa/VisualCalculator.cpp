@@ -5,63 +5,48 @@ void VisualCalculator::Play()
     //drawer->cameraCenterOnPoint({ 0, 0, 0 });
 
 	
-    SegmentLine f1{ {0,1,1}, { 0,0,0 } };
+    //SegmentLine f1{ {0,1,1}, { 0,0,0 } };
 	//SegmentLine f2{ 0,2,1,0,0,0};
 
-	Point p{ 1, 2, 1 };
-	Point p1{ 2, 0, 0 };
+	data->addPoint(2,1);
+	data->addPoint(0,0);
+	//data->addPoint(1,1);
+	//data->addPoint(2,0);
+	//data->addPoint(2,2);
+	//data->addPoint(-1,-1);
+	data->addPoint(4,2);
 
-	Point p2{ 3, 1, 1 };
-	Point p3{ 4, 2, 0 };
-	// test prostej i punktów wzglêdem niej
-    Point p4{ 5, 2, 2 };
-    Point p5{ 6, -1, -1 };
-	// test odcinka
-	Point p6{ 7, 4, 2 };
+	//data->addLine(1, 2);
 
+    //data->addTriangle({ 0,3,-1,0 }, { 0,2,2,0 }, { 0,-1,2,0 });
+    //std::cout << "punkt 1: " << isPointInsideTriange({ 0,2,1,0 }, { 0, 3, -1, 0 }, { 0,2,2,0 }, { 0,-1,2,0 }) << std::endl;
+    //std::cout << "punkt 2: " << isPointInsideTriange({ 0,0,0,0 }, { 0, 3, -1, 0 }, { 0,2,2,0 }, { 0,-1,2,0 }) << std::endl;
+    //std::cout << "punkt 3: " << isPointInsideTriange({ 0,4,2,0 }, { 0, 3, -1, 0 }, { 0,2,2,0 }, { 0,-1,2,0 }) << std::endl;
+    data->addPolygon({
+        {0,3,-1,0},
+        {0,2,2,0},
+        {0,-1,2,0},
 
-	data->addPoint(p);
-	data->addPoint(p1);
-	data->addPoint(p2);
-	data->addPoint(p3);
-	data->addPoint(p4);
-	data->addPoint(p5);
-	data->addPoint(p6);
+        {0,-3,1,0},
+        {0,-1,-3,0},
+        {0,0,0,0}
+        });
+    //{{ 0, 3, -1, 0 },{ 0,2,2,0 },{ 0,-1,2,0 },{ 0,-3,1,0 },{ 0,-1,-3,0 },{ 0,0,0,0 }}
+    std::cout << "punkt 1: " << isPointInsidePolygon({ 0,2,1,0 }, { { 0, 3, -1, 0 },{ 0,2,2,0 },{ 0,-1,2,0 },{ 0,-3,1,0 },{ 0,-1,-3,0 },{ 0,0,0,0 } }) << std::endl;
+    std::cout << "punkt 2: " << isPointInsidePolygon({ 0,0,0,0 }, { { 0, 3, -1, 0 },{ 0,2,2,0 },{ 0,-1,2,0 },{ 0,-3,1,0 },{ 0,-1,-3,0 },{ 0,0,0,0 } }) << std::endl;
+    std::cout << "punkt 3: " << isPointInsidePolygon({ 0,4,2,0 }, { { 0, 3, -1, 0 },{ 0,2,2,0 },{ 0,-1,2,0 },{ 0,-3,1,0 },{ 0,-1,-3,0 },{ 0,0,0,0 } }) << std::endl;
 
-	data->addLine({ 1, 1, 2});
-
-	//sprawdzenie czy punkt le¿y na prostej i po której stronie jest
-	std::cout << "Test przynale¿noœci punktu do prostej f1: " << std::endl;
-    std::cout << "Czy punkt 3. le¿y na prostej f1? : " << isPointOnLine(p2, f1) << std::endl;
-	std::cout << "Czy punkt 5. le¿y na prostej f1? : " << isPointOnLine(p4, f1) << std::endl;
-	std::cout << "Czy punkt 6. le¿y na prostej f1? : " << isPointOnLine(p5, f1) << std::endl;
-
-	std::cout << "Test przynale¿noœci punktu do odcinka f2: " << std::endl;
-    std::cout << "Czy punkt 4. le¿y na odcinku f2? : " << isPointOnLineSegment(p3,{p, p1}) << std::endl;
-	std::cout << "Czy punkt 1. le¿y na odcinku f2? : " << isPointOnLineSegment(p, { p, p1 }) << std::endl;
-	std::cout << "Czy punkt 6. le¿y na odcinku f2? : " << isPointOnLineSegment(p5, { p, p1 }) << std::endl;
-    std::cout << "Test sprawdzenia stron wzgêdem prostej/odcinka: " << std::endl;
-	std::cout << "Czy punkt 4. le¿y po prawej stronie f2 : " << isPointOnRightSideOfLine(p3, { p, p1 }) << std::endl;
-	std::cout << "Czy punkt 5. le¿y po prawej stronie f2 : " << isPointOnRightSideOfLine(p4, { p, p1 }) << std::endl;
-	std::cout << "Czy punkt 5. le¿y po lewej stronie f2 : " << isPointOnLeftSideOfLine(p4, { p, p1 }) << std::endl;
-
-    //przemiestwienie prostej f1 o wektor (0, -1, 1)
-	std::cout << "Test przesuwania prostej f1 o wektor (0, -1, 1): " << std::endl;
-    SegmentLine f2 = f1;
-	moveLineByVector(f1, { 0, -1, 1 });
-
-	//odbicie punktu p2 wzglêdem prostej f1
-    std::cout << "Test Odbicia punktu wzgêdem prostej: " << std::endl;
-
-	std::cout << "Odbicie p2 wzglêdem f1: " << std::endl;
-	mirrorPointOnLine(p2, f1);
-	p2.id = 8;
-	data->addPoint(p2);
+    //SegmentLine f2 = f1;
+	//moveLineByVector(f1, { 0, -1, 1 });
+	//mirrorPointOnLine(p2, f1);
+	
+	//data->addPoint(p2.x,p2.y);
     //{ 0, 0, 0 }, { 0,1,-1 }
 	// { 0,1,-1 }, { 0,0,0 }
-    data->addCircle({ 0, -4, -4 }, 2, 6);
-    data->addSplitedCircle({ 0, -4, 3.5 }, 1, 8, { { 0,1,-1 }, { 0,0,0 } });
-    data->addSplitedCircle({ 0, 4, -3.5 }, 2, 6, { { 0,1,-1 }, { 0,0,0 } });
+    //data->addCircle({ 0, -4, -4 }, 2, 6);
+    //data->addSplitedCircle({ 0, -4, -4 }, 2, 6, { {0,1,1}, { 0,0,0 } });
+    //data->addSplitedCircle({ 0, -4, 4.5 }, 1, 8, { { 0,1,-1 }, { 0,0,0 } });
+    //data->addSplitedCircle({ 0, 4, -3.5 }, 2, 6, { { 0,1,-1 }, { 0,0,0 } });
 	//data->addCircle({ 0, 4, -4 }, 2, 6);
 
 
@@ -76,14 +61,18 @@ void VisualCalculator::Play()
         drawer->clearCavas();
 
         drawer->setDrawColor(0, 0, 0, 255);
+
         drawer->drawLines(data->getLines(), data->getPoints());
+
 		drawer->drawFLines(data->getFLines(), data->getFPoints());
-        drawer->drawFullLine(f1);
-        drawer->drawFullLine(f2);
-        drawer->drawFullLine({ {0,0,0},{0,1,-1} });
-        drawer->drawExtendedLine(f2, -10, 10);
+
+        //drawer->drawFullLine(f1);
+        //drawer->drawFullLine(f2);
+        //drawer->drawFullLine({ {0,0,0},{0,1,-1} });
+        //drawer->drawExtendedLine(f2, -10, 10);
 		drawer->writePointsData(data->getPoints());
 		drawer->writeFPointsData(data->getFPoints());
+        drawer->writeFLineGroup(data->getFLines(), data->getFPoints());
 
         drawer->drawCoordinateSystem();
         drawer->setDrawColor(255, 0, 0, 255);

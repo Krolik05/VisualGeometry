@@ -5,7 +5,9 @@ std::unique_ptr<ObjectManager> initObjectManager()
 	return std::make_unique<ObjectManager>();
 }
 
-void ObjectManager::loadData(const char* file)
+// ODKOMENTOWAÆ DODAWANIE PUNKTÓW !!!!!!!!!!
+
+void ObjectManager::loadData(const char* file)  
 {
 	std::fstream data(file, std::fstream::in);
 	std::string sline;
@@ -21,7 +23,7 @@ void ObjectManager::loadData(const char* file)
 		/*p.x *= 30;
 		p.y *= 30;*/
 		std::cout << p << std::endl;
-		addPoint(p);
+		//addPoint(p);
 	}
 	while(data.peek() != '*')
 		std::getline(data, sline);
@@ -40,14 +42,14 @@ void ObjectManager::loadData(const char* file)
 			l.id_beginning = id_beginning;
 			l.id_end = id_end;
 			std::cout << l << std::endl;
-			addLine(l);
+			//addLine(l);
 			id_beginning = id_end;
 		}
 		indexLine l;
 		l.id = id;
 		l.id_beginning = id_beginning;
 		l.id_end = id_first;
-		addLine(l);
+		//addLine(l);
 		std::cout << l << "\n" << std::endl;
 
 	}
@@ -76,48 +78,135 @@ const std::vector<indexLine>& ObjectManager::getFLines()
 	return flines;
 }
 
-void ObjectManager::addPoint(Point p)
+//void ObjectManager::addPoint(Point p)
+//{
+//	points.push_back(p);
+//}
+
+void ObjectManager::addPoint(int x, int y)
 {
-	points.emplace_back(p);
+	points.push_back({ getNewElementID<Point>(), x, y, 0 });
 }
 
-void ObjectManager::addLine(indexLine l)
+void ObjectManager::addPoint(int x, int y, size_t group)
 {
-	lines.emplace_back(l);
+	points.push_back({ getNewElementID<Point>(), x, y, group });
+}
+
+//void ObjectManager::addFPoint(FPoint p)
+//{
+//	fpoints.push_back(p);
+//}
+
+void ObjectManager::addFPoint(float x, float y)
+{
+	fpoints.push_back({ getNewElementID<FPoint>(), x, y, 0 });
+}
+
+void ObjectManager::addFPoint(float x, float y, size_t group)
+{
+	fpoints.push_back({ getNewElementID<FPoint>(), x, y, group });
+}
+
+//void ObjectManager::addLine(indexLine l)
+//{
+//	lines.push_back(l);
+//}
+
+void ObjectManager::addLine(size_t i1, size_t i2)
+{
+	lines.push_back({ getNewElementID<indexLine>(), i1, i2, 0 });
+}
+
+void ObjectManager::addLine(size_t i1, size_t i2, size_t group)
+{
+	lines.push_back({ getNewElementID<indexLine>(), i1, i2, group });
+}
+
+//void ObjectManager::addFLine(indexLine l)
+//{
+//	flines.push_back(l);
+//}
+
+void ObjectManager::addFLine(size_t i1, size_t i2)
+{
+	flines.push_back({ getNewElementID<indexLine>(), i1, i2, 0 });
+}
+
+void ObjectManager::addFLine(size_t i1, size_t i2, size_t group)
+{
+	flines.push_back({ getNewElementID<indexLine>(), i1, i2, group });
+}
+
+void ObjectManager::addTriangle(FPoint a, FPoint b, FPoint c)
+{
+	size_t gr = getNewGroupID();
+	addFPoint(a.x, a.y, gr);
+	addFPoint(b.x, b.y, gr);
+	addFPoint(c.x, c.y, gr);
+
+	size_t last = fpoints.size();
+	addFLine(last - 2, last - 1, gr);
+	addFLine(last - 1, last, gr);
+	addFLine(last, last - 2, gr);
+}
+
+void ObjectManager::addPolygon(std::initializer_list<FPoint> list)
+{
+	size_t gr = getNewGroupID();
+	for (auto& p : list) {
+		addFPoint(p.x, p.y, gr);
+	}
+	size_t size = list.size();
+	size_t firstAdded = fpoints.size() - size;
+	for (size_t i = 0; i < size; i++)
+	{
+		addFLine(
+			firstAdded + 1 + i,
+			firstAdded + 1 + (i + 1) % size,
+			gr
+		);
+	}
 }
 
 void ObjectManager::addCircle(FPoint center, float radius, int resolution)
 {
 	double angleStep = 2 * M_PI / resolution;
-
+	size_t grID = getNewGroupID();
 	for(int i = 0; i < resolution; ++i)
 	{
 		double angle = i * angleStep;
-		FPoint p;
-		p.id = fpoints.size() + 1;
-		p.x = center.x + radius * cos(angle);
-		p.y = center.y + radius * sin(angle);
-		fpoints.emplace_back(p);
+		float x = center.x + radius * cos(angle);
+		float y = center.y + radius * sin(angle);
+		addFPoint(x, y, grID);
 	}
 
 	int id = flines.size() + 1;
 	for(int i = 0; i < resolution; ++i)
 	{
-		indexLine l;
-		l.id = id;
-		l.id_beginning = fpoints.size() - resolution + i + 1;
-		l.id_end = fpoints.size() - resolution + 1 + (i + 1) % resolution;
-		flines.emplace_back(l);
+		size_t id_b = fpoints.size() - resolution + i + 1;
+		size_t id_e= fpoints.size() - resolution + 1 + (i + 1) % resolution;
+		addFLine(id_b, id_e, grID);
 	}
 
 }
 
 void ObjectManager::addSplitedCircle(FPoint center, float radius, int resolution, FSegmentLine f)
 {
+	size_t grID_1 = getNewGroupID();
+	size_t grID_2 = getNewGroupID();
 	double angleStep = 2 * M_PI / resolution;
 	FPoint perpendicular = { 0,f.end.x - f.beginning.x, f.end.y - f.beginning.y };
 	perpendicular.Normalize();
-	perpendicular.y *= -1;
+	float nachylenie = (f.end.x - f.beginning.x) / (f.end.y - f.beginning.y);
+	if(nachylenie < 0)
+	{
+		perpendicular.y *= -1;
+	}
+	else {
+		perpendicular.x *= -1;
+
+	}
 	perpendicular = perpendicular * (radius / 4);
 
 
@@ -125,17 +214,19 @@ void ObjectManager::addSplitedCircle(FPoint center, float radius, int resolution
 	{
 		double angle = i * angleStep;
 		FPoint p;
-		p.id = fpoints.size() + 1;
 		p.x = center.x + radius * cos(angle);
 		p.y = center.y + radius * sin(angle);
-		if (isPointOnRightSideOfLine(p, f))
+		if (isPointOnRightSideOfLine(p, f)) {
 			p = p + perpendicular;
-		else
+			p.group = grID_1;
+		}
+		else {
 			p = p - perpendicular;
-		fpoints.emplace_back(p);
+			p.group = grID_2;
+		}
+		addFPoint(p.x, p.y, p.group);
 	}
 
-	int id = flines.back().id + 1;
 	int pointsSize = fpoints.size();
 	int index = fpoints.size() - resolution;
 	int crossingsCount = 0;
@@ -180,42 +271,43 @@ void ObjectManager::addSplitedCircle(FPoint center, float radius, int resolution
 			
 			if (isPointOnRightSideOfLine(fpoints[index_P1], f)) {
 				A = crossingPoint + perpendicular;
+				A.group = grID_1;
 				B = crossingPoint - perpendicular;
+				B.group = grID_2;
 			}
 			else {
 				A = crossingPoint - perpendicular;
+				A.group = grID_2;
 				B = crossingPoint + perpendicular;
+				B.group = grID_1;
 			}
-			
-			fpoints.emplace_back(A);
-			indexLine l1{ id, index + i + 1, fpoints.size() };
-			flines.emplace_back(l1);
+			addFPoint(A.x,A.y, A.group);
+			addFLine(index + i + 1, fpoints.size(), A.group);
 
-			fpoints.emplace_back(B);
-			indexLine l2{ id, index + 1 + (i + 1) % resolution, fpoints.size() };
-			flines.emplace_back(l2);
-			
-			
+			addFPoint(B.x, B.y, B.group);
+			addFLine(index + 1 + (i + 1) % resolution, fpoints.size(), B.group);
 		}
 		else {
-			indexLine l;
-			l.id = id;
-			l.id_beginning = index + i + 1;
-			l.id_end = index + 1 + (i + 1) % resolution;
-			flines.emplace_back(l);
+			if(isPointOnRightSideOfLine(p1, f))
+				addFLine(index + i + 1, index + 1 + (i + 1) % resolution, grID_1);
+			else
+				addFLine(index + i + 1, index + 1 + (i + 1) % resolution, grID_2);
 		}
 	}
 
+	bool isPositiveSlope = (nachylenie > 0);
 
-	if(isPointOnRightSideOfLine(fpoints[fpoints.size() - 2], f) && isPointOnRightSideOfLine(fpoints[fpoints.size() - 3], f)) {
-		indexLine l1{ id, fpoints.size(), fpoints.size() - 3 };
-		flines.emplace_back(l1);
-		indexLine l2{ id, fpoints.size() - 2 , fpoints.size() - 1 };
-		flines.emplace_back(l2);
+	size_t activeGroup1 = isPositiveSlope ? grID_1 : grID_2;
+	size_t activeGroup2 = isPositiveSlope ? grID_2 : grID_1;
+
+	bool areBothOnRight = (isPointOnRightSideOfLine(fpoints[fpoints.size() - 2], f) &&
+		isPointOnRightSideOfLine(fpoints[fpoints.size() - 3], f));
+
+	if(isPositiveSlope != areBothOnRight) {
+		addFLine(fpoints.size(), fpoints.size() - 3, activeGroup1);
+		addFLine(fpoints.size() - 2, fpoints.size() - 1, activeGroup2);
 	} else {
-		indexLine l1{ id, fpoints.size() - 1, fpoints.size() - 3 };
-		flines.emplace_back(l1);
-		indexLine l2{ id, fpoints.size() - 2 , fpoints.size() };
-		flines.emplace_back(l2);
+		addFLine(fpoints.size() - 1, fpoints.size() - 3, activeGroup1);
+		addFLine(fpoints.size() - 2, fpoints.size(), activeGroup2);
 	}
 }

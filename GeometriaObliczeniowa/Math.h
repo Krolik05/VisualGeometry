@@ -1,11 +1,17 @@
 #pragma once
-#include <iostream>
+
 
 #ifndef MATH
 #define MATH
+#include <iostream>
+#include <vector>
+#include <cmath>
 struct Point
 {
-	int id, x, y;
+	size_t id;
+	int	x, y;
+	size_t group;
+	//Point(int ID, int X, int Y, size_t G) : id(ID), x(X), y(Y), group(G) { }
 	void operator*= (float num);
 	//operator FPoint() const { return FPoint{ id, static_cast<float>(x), static_cast<float>(y) }; }
 	//operator SDL_Point() const { return SDL_Point{ x, y }; }
@@ -18,11 +24,13 @@ std::ostream& operator<< (std::ostream& os, const Point& p);
 
 struct FPoint
 {
-	int id;
+	size_t id;
 	float x, y;
+	size_t group;
+	//FPoint(int ID, float X, float Y, size_t G) : id(ID), x(X), y(Y), group(G) { }
 	void operator*= (float num);
 	//operator SDL_FPoint() const { return SDL_FPoint{ x, y }; }
-	operator Point() const { return Point{ id, static_cast<int>(x), static_cast<int>(y) }; }
+	operator Point() const { return Point{ id, static_cast<int>(x), static_cast<int>(y), group }; }
 	void Normalize();
 };
 
@@ -48,7 +56,8 @@ std::ostream& operator<< (std::ostream& os, const SegmentLine& l);
 
 struct indexLine
 {
-	int id, id_beginning, id_end;
+	size_t id, id_beginning, id_end, group;
+	//indexLine(int ID, size_t B_ID, size_t E_ID, size_t G) : id(ID), id_beginning(B_ID), id_end(E_ID), group(G) { }
 };
 
 std::ostream& operator<< (std::ostream& os, const indexLine& l);
@@ -80,5 +89,15 @@ bool isPointOnLeftSideOfLine(FPoint p, FSegmentLine l);
 bool isPointOnRightSideOfLine(FPoint p, FSegmentLine l);
 void moveLineByVector(FSegmentLine& l, FPoint v);
 void mirrorPointOnLine(FPoint& p, FSegmentLine l);
+
+float areaOfTriangle(const FPoint& a, const FPoint& b, const FPoint& c);
+float areaOfPolygon(const std::vector<FPoint>& points);
+
+bool isLineCrossingSegment(const FSegmentLine& line, const FSegmentLine& segment);
+bool isLineLeftFormPointCrossingSegment(const FPoint& p, const FSegmentLine& segment);
+
+bool isPointInsideTriange(const FPoint& p, const FPoint& a, const FPoint& b, const FPoint& c);
+bool isPointInsidePolygon(const FPoint& p, const std::vector<FPoint>& points);
+bool isPointInsidePolygon(const FPoint& p, const std::initializer_list<FPoint>& points);
 
 #endif // !MATH

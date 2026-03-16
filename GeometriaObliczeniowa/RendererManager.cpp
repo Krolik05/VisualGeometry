@@ -44,7 +44,7 @@ void RendererManager::adjustScaleToCavas(const std::vector<Point>& points)
 	if(points.empty())
 		return;
 	int lowestX = points[0].x, highestX = points[0].x, lowestY = points[0].y, highestY = points[0].y;
-	for(Point p : points)
+	for(auto& p : points)
 	{
 		if (p.x < lowestX)
 			lowestX = p.x;
@@ -76,7 +76,7 @@ void RendererManager::drawCoordinateSystem()
 
 void RendererManager::drawPoints(const std::vector<Point>& points)
 {
-	for (Point p : points)
+	for (auto& p : points)
 	{
 		Point temp = p;
 		adjustPointToCamera(temp);
@@ -86,7 +86,7 @@ void RendererManager::drawPoints(const std::vector<Point>& points)
 
 void RendererManager::drawFPoints(const std::vector<FPoint>& points)
 {
-	for (FPoint p : points)
+	for (auto& p : points)
 	{
 		FPoint temp = p;
 		adjustPointToCamera(temp);
@@ -103,11 +103,11 @@ void RendererManager::writePointsData(const std::vector<Point>& points)
 	
 	if( scale < 1 )
 		return;
-	for (Point p : points)
+	for (auto& p : points)
 	{
 		Point temp = p;
 		adjustPointToCamera(temp);
-		std::string text = std::to_string(p.id) + ": (" + std::to_string(p.x) + ", " + std::to_string(p.y) + ")";
+		std::string text = "I:" + std::to_string(p.id) + ";" + std::to_string(p.group) + ": (" + std::to_string(p.x) + ", " + std::to_string(p.y) + ")";
 		drawText(text, temp.x, temp.y);
 	}
 }
@@ -116,11 +116,37 @@ void RendererManager::writeFPointsData(const std::vector<FPoint>& fpoints)
 {
 	if (scale < 1)
 		return;
-	for (FPoint p : fpoints)
+	for (auto& p : fpoints)
 	{
 		FPoint temp = p;
 		adjustPointToCamera(temp);
-		std::string text = std::to_string(p.id) + ": (" + std::to_string(p.x) + ", " + std::to_string(p.y) + ")";
+		std::string text = "F:" + std::to_string(p.id) + ";" + std::to_string(p.group) + ": (" + std::to_string(p.x) + ", " + std::to_string(p.y) + ")";
+		drawText(text, temp.x, temp.y);
+	}
+}
+
+void RendererManager::writeLineGroup(const std::vector<indexLine>& lines, const std::vector<Point>& points)
+{
+	if (scale < 1)
+		return;
+	for (auto& l : lines)
+	{
+		FPoint temp = { 0,(points[l.id_beginning - 1].x + points[l.id_end - 1].x) / 2, (points[l.id_beginning - 1].y + points[l.id_end - 1].y) / 2,0 };
+		adjustPointToCamera(temp);
+		std::string text = "l:" + std::to_string(l.id) + ";" + std::to_string(l.group);
+		drawText(text, temp.x, temp.y);
+	}
+}
+
+void RendererManager::writeFLineGroup(const std::vector<indexLine>& flines, const std::vector<FPoint>& fpoints)
+{
+	if (scale < 1)
+		return;
+	for (auto& l : flines)
+	{
+		FPoint temp = { 0,(fpoints[l.id_beginning - 1].x + fpoints[l.id_end - 1].x) / 2, (fpoints[l.id_beginning - 1].y + fpoints[l.id_end - 1].y) / 2,0 };
+		adjustPointToCamera(temp);
+		std::string text = "fl:" + std::to_string(l.id) + ";" + std::to_string(l.group);
 		drawText(text, temp.x, temp.y);
 	}
 }
@@ -128,7 +154,7 @@ void RendererManager::writeFPointsData(const std::vector<FPoint>& fpoints)
 void RendererManager::drawLines(const std::vector<indexLine>& lines, const std::vector<Point>& points)
 {
 	Point a, b;
-	for (indexLine l : lines)
+	for (auto& l : lines)
 	{
 		a = points[l.id_beginning - 1];
 		b = points[l.id_end - 1];
@@ -141,7 +167,7 @@ void RendererManager::drawLines(const std::vector<indexLine>& lines, const std::
 void RendererManager::drawFLines(const std::vector<indexLine>& flines, const std::vector<FPoint>& fpoints)
 {
 	FPoint a, b;
-	for (indexLine l : flines)
+	for (auto& l : flines)
 	{
 		a = fpoints[l.id_beginning - 1];
 		b = fpoints[l.id_end - 1];

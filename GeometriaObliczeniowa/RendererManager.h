@@ -19,8 +19,12 @@ public:
     void drawCoordinateSystem();
     void drawPoints(const std::vector<Point>& points);
 	void drawFPoints(const std::vector<FPoint>& points);
+
 	void writePointsData(const std::vector<Point>& points);
 	void writeFPointsData(const std::vector<FPoint>& points);
+    void writeLineGroup(const std::vector<indexLine>& lines, const std::vector<Point>& points);
+    void writeFLineGroup(const std::vector<indexLine>& flines, const std::vector<FPoint>& fpoints);
+
     void drawLines(const std::vector<indexLine>& lines, const std::vector<Point>& points);
 	void drawFLines(const std::vector<indexLine>& flines, const std::vector<FPoint>& fpoints);
 
