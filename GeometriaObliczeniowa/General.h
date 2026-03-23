@@ -13,11 +13,11 @@
 //      |- MenagerObjects
 //      *
 
-#ifndef General
-#define General
+//#ifndef General
+//#define General
 
-#include "SDL.h"
-#include "SDL_ttf.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include <vector>
 #include <memory>
@@ -26,4 +26,4 @@
 #include <cmath>
 #include "Math.h"
 
-#endif // !General
+//#endif // !General

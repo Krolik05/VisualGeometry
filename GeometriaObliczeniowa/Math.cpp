@@ -112,19 +112,14 @@ bool isLineCrossingSegment(const FSegmentLine& line, const FSegmentLine& segment
         && crossPoint.y - floatError <= std::max(segment.beginning.y, segment.end.y);
 }
 
-bool isLineLeftFormPointCrossingSegment(const FPoint& p, const FSegmentLine& segment)
+bool isLineRightFormPointCrossingSegment(const FPoint& p, const FSegmentLine& segment)
 {
-    bool isCrossing = false;
-    FPoint crossPoint;
-    float floatError = 0.001f;
-    FSegmentLine line = { p,p + FPoint{0,1,0,0} };
-    SegmentCrossing(line, segment, crossPoint, isCrossing);
-    if (crossPoint.x - floatError < p.x) return false;
-    return isCrossing
-        && crossPoint.x + floatError > std::min(segment.beginning.x, segment.end.x)
-        && crossPoint.x - floatError <= std::max(segment.beginning.x, segment.end.x)
-        && crossPoint.y + floatError > std::min(segment.beginning.y, segment.end.y)
-        && crossPoint.y - floatError <= std::max(segment.beginning.y, segment.end.y);
+    if ((segment.beginning.y > p.y) != (segment.end.y > p.y))
+    {
+        float xCrossing = segment.beginning.x + (segment.end.x - segment.beginning.x) * (p.y - segment.beginning.y) / (segment.end.y - segment.beginning.y);
+        if (p.x < xCrossing) return true;
+    }
+    return false;
 }
 
 bool isPointOnLeftSideOfLine(Point p, SegmentLine l)
@@ -216,7 +211,7 @@ bool isPointOnLineSegment(FPoint p, FSegmentLine l)
 bool isPointOnLeftSideOfLine(FPoint p, FSegmentLine l)
 {
     float position = (l.end.x - l.beginning.x) * (p.y - l.beginning.y) - (l.end.y - l.beginning.y) * (p.x - l.beginning.x);
-    return position < 0.0f;
+    return position <= 0.0f;
 }
 
 bool isPointOnRightSideOfLine(FPoint p, FSegmentLine l)
@@ -284,7 +279,7 @@ bool isPointInsidePolygon(const FPoint& p, const std::vector<FPoint>& points)
     for (size_t i = 0; i < size; i++)
     {
         FSegmentLine segment = { points[i],points[(i + 1) % size] };
-        crossings += isLineLeftFormPointCrossingSegment(p, segment);
+        crossings += isLineRightFormPointCrossingSegment(p, segment);
     }
     return crossings % 2;
 }
@@ -297,6 +292,10 @@ bool isPointInsidePolygon(const FPoint& p, const std::initializer_list<FPoint>& 
 
 size_t countPointsInsidePolygon(const std::vector<FPoint>& polygon, const std::vector<FPoint>& pool)
 {
+    size_t size = polygon.size();
+    if (size == 3) {
+        return countPointsInsideTriangle(polygon[0], polygon[1], polygon[2], pool);
+    }
 	FPoint max{ 0, std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest() };
     FPoint min{ 0, std::numeric_limits<float>::max(), std::numeric_limits<float>::max() };
 	findEdgePoints(max, min, polygon);

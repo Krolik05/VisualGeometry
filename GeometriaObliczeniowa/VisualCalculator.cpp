@@ -43,6 +43,27 @@ void VisualCalculator::Play()
  //   std::cout << "punkt 7: " << isPointInsidePolygon({ 0,-1,-1,0 }, { { 0, 3, -1, 0 },{ 0,2,2,0 },{ 0,-1,2,0 },{ 0,-3,1,0 },{ 0,-1,-3,0 },{ 0,0,0,0 } }) << std::endl;
  //   std::cout << "punkt 8: " << isPointInsidePolygon({ 0,-4,-4,0 }, { { 0, 3, -1, 0 },{ 0,2,2,0 },{ 0,-1,2,0 },{ 0,-3,1,0 },{ 0,-1,-3,0 },{ 0,0,0,0 } }) << std::endl;
 
+    std::vector<FPoint> group0 = data->getFGroup(1);
+    std::vector<FPoint> group1 = data->getFGroup(2);
+    //std::vector<FPoint> group1 = data->getFGroup(0);
+    for (const auto& p : group0)
+        std::cout << p << ", ";
+    std::cout << "\n";
+    for (const auto& p : group1)
+        std::cout << p << ", ";
+    std::cout << "\n";
+    using getTime = std::chrono::steady_clock;
+    auto g0_start = getTime::now();
+    size_t pointsInTri = countPointsInsidePolygon(group0, data->getFPoints());
+    auto g0_end = getTime::now();
+    auto g0_diff = g0_end - g0_start;
+    std::cout << "Czas zliczania " << pointsInTri << " punktów dla trójk¹ta: " << std::chrono::duration_cast<std::chrono::microseconds>(g0_diff).count() << "\n";
+
+    auto g1_start = getTime::now();
+    size_t pointsInPoly = countPointsInsidePolygon(group1, data->getFPoints());
+    auto g1_end = getTime::now();
+    auto g1_diff = g1_end - g1_start;
+    std::cout << "Czas zliczania " << pointsInPoly << " punktów dla wielok¹ta: " << std::chrono::duration_cast<std::chrono::microseconds>(g1_diff).count() << "\n";
     //SegmentLine f2 = f1;
 	//moveLineByVector(f1, { 0, -1, 1 });
 	//mirrorPointOnLine(p2, f1);
@@ -79,7 +100,9 @@ void VisualCalculator::Play()
         //drawer->drawFullLine({ {0,0,0},{0,1,-1} });
         //drawer->drawExtendedLine(f2, -10, 10);
 		//drawer->writePointsData(data->getPoints());
-		//drawer->writeFPointsData(data->getFPoints());
+        //drawer->writeFPointsData(data->getFPoints());
+        drawer->writeFPointsData(group0);
+        drawer->writeFPointsData(group1);
         //drawer->writeFLineGroup(data->getFLines(), data->getFPoints());
 
         drawer->drawCoordinateSystem();

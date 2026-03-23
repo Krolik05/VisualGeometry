@@ -94,7 +94,7 @@ float areaOfTriangle(const FPoint& a, const FPoint& b, const FPoint& c);
 float areaOfPolygon(const std::vector<FPoint>& points);
 
 bool isLineCrossingSegment(const FSegmentLine& line, const FSegmentLine& segment);
-bool isLineLeftFormPointCrossingSegment(const FPoint& p, const FSegmentLine& segment);
+bool isLineRightFormPointCrossingSegment(const FPoint& p, const FSegmentLine& segment);
 
 bool isPointInsideTriange(const FPoint& p, const FPoint& a, const FPoint& b, const FPoint& c);
 bool isPointInsidePolygon(const FPoint& p, const std::vector<FPoint>& points);
