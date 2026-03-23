@@ -37,3 +37,24 @@ cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%/scripts/buildsystems/vc
 
 # Build the project (Release mode)
 cmake --build build --config Release
+```
+
+## Example
+![10000 Points and Triangle](Zrzut%20ekranu%202026-03-22%20155242.png)
+
+## Data File Format (`data.txt`)
+
+The application reads geometric data from a structured text file. The file is divided into specific sections, recognized by keywords prefixed with an asterisk (`*`).
+
+### `*NODES` (Points)
+This section contains a list of vertices in 2D space. Each line defines a single point using the following format:
+> `[Node_ID] [X_Coordinate] [Y_Coordinate]`
+
+**Example:** `2 3 4` represents a point with ID 2, located at coordinates X=3 and Y=4.
+
+### `*ELEMENTS` (Shapes and Lines)
+This section defines how the points are connected to form geometric shapes or paths. Each line represents a single element, referencing the IDs previously defined in the `*NODES` section. Give them ID of 0 for automatic numeration.
+> `[Element_ID] [Node_ID_1] [Node_ID_2] ... [Node_ID_N]`
+
+**Examples:** * `1 7 5 8 2` defines a polygon (ID 1) constructed from nodes 7, 5, 8, and 2.
+* `3 1 6` creates a simple line segment between node 1 and 6.
